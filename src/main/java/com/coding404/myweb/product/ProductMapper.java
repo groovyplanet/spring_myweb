@@ -14,4 +14,5 @@ public interface ProductMapper {
     public ProductVO getDetail(int prodId); //상세내역
     public int productUpdate(ProductVO vo); //수정
     public int productDelete(int prodId);
+    public int getTotal(@Param("userId")String userId , @Param("cri") Criteria cri); //전체 게시글 수
 }
