@@ -25,4 +25,7 @@ public class ProductVO {
     private String prodPurchaseYn;
     private String prodContent;
     private String prodComment;
+
+    //N:1조인 - 1쪽 컬럼을 추가함
+    private String categoryNav;
 }
