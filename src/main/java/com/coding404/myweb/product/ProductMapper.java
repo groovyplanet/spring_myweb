@@ -12,7 +12,7 @@ import java.util.ArrayList;
 @Mapper
 public interface ProductMapper {
     public int productInsert(ProductVO vo);//등록
-
+    
     public ArrayList<ProductVO> getList(@Param("userId") String userId, @Param("cri") Criteria cri); //목록 (매개변수가 2개 이상이면, 이름을 붙여줘야함)
     public int getTotal(@Param("userId") String userId, @Param("cri") Criteria cri); //전체게시글 수
 
@@ -26,4 +26,8 @@ public interface ProductMapper {
     public ArrayList<CategoryVO> getCategoryChild(CategoryVO vo);
     //파일 데이터 인서트
     public void uploadFile(ProductUploadVO vo);
+    //파일데이터 조회
+    public ArrayList<ProductUploadVO> getImgs(int prodId);
+
+
 }

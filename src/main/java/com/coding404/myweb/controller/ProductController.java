@@ -1,6 +1,8 @@
 package com.coding404.myweb.controller;
 
+import com.coding404.myweb.command.ProductUploadVO;
 import com.coding404.myweb.command.ProductVO;
+import com.coding404.myweb.command.UsersVO;
 import com.coding404.myweb.product.ProductService;
 import com.coding404.myweb.util.Criteria;
 import com.coding404.myweb.util.PageVO;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,10 +57,14 @@ public class ProductController {
     //step5. 페이지네이션을 누를때, 검색 키워드를 같이 넘겨주어야 함
     //step6. 100씩 보기버튼 처리
     @GetMapping("/productList")
-    public String productList(Model model, Criteria cri) {
+    public String productList(Model model, Criteria cri, HttpSession session) {
+
 
         //현재 로그인되어 있는 사람 아이디가 admin이라고 가정하고
-        String userId = "admin";
+
+        UsersVO vo = (UsersVO) session.getAttribute("userVO");
+        String userId = vo.getId();
+
         ArrayList<ProductVO> list = productService.getList(userId, cri);
         model.addAttribute("list", list);
         //페이지VO
@@ -80,8 +87,14 @@ public class ProductController {
     public String productDetail(@RequestParam("prodId") int prodId,
                                 Model model) {
 
+        //상품에 대한 select
         ProductVO vo = productService.getDetail(prodId);
         model.addAttribute("vo", vo);
+
+        //파일에 대한 select
+        ArrayList<ProductUploadVO> imgs = productService.getImgs(prodId);
+        model.addAttribute("imgs", imgs);
+
 
         return "product/productDetail";
     }
@@ -96,14 +109,11 @@ public class ProductController {
         files = files.stream().filter( file -> file.isEmpty() == false).collect(Collectors.toList());
         //확장자 검사
         for(MultipartFile f : files) {
-            String contentType = f.getContentType(); // 파일의 컨텐츠 타입을 얻음
-            System.out.println(contentType);
-            if(contentType.contains("image")==false){
-                ra.addFlashAttribute("msg","png,jpg,jpeg 형식만 등록 가능합니다.");
+            String contentType = f.getContentType(); //파일의 컨텐츠 타입을 얻음
+            if(contentType.contains("image") == false) {
+                ra.addFlashAttribute("msg", "png, jpg, jpeg 형식만 등록가능합니다");
                 return "redirect:/product/productList";
-
             }
-            
         }
 
 

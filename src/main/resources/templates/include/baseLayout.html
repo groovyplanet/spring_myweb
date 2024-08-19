@@ -23,13 +23,14 @@
     <!--개인 -->
     <link rel="stylesheet" type="text/css" href="/css/modal.css" />
 </head>
+
 <body>
 
     <header class="wrap">
         <div class="header">
         <h3 style="color: #fff; position: absolute; left: 20px; top: 27px;">coding404 - 연습용 입니다. 이에 대한 무단 복제 및 배포를 원칙적으로 금합니다.
             원본파일 및 핸드폰 촬영, 동영상강좌 녹화를 통한 무단 복제 · 배포하는 경우 저작권법 제136조에 의한 저작재산권 침해 죄에 해당될 수 있으니 각별한 주의 바랍니다.</h3>
-        <span class="admin_id"><b style="color:#7866c9;">관리자</b>홍길동 님</span>
+        <span class="admin_id"><b style="color:#7866c9;">관리자</b>[[${session.userVO.id}]] 님</span>
     </div>
 
 </header>
@@ -39,7 +40,7 @@
         <ul class="sidenav">
             <li class="sub_menu_toggle">
                 <a href="#">- 상품관리(예제)</a>
-                <ul class="sub_menu ">
+                <ul class="sub_menu">
                     <li><a href="/product/productReg">-상품등록</a></li>
                     <li><a href="/product/productList">-상품조회 / 수정</a></li>
                     <li><a href="#">-하단메뉴</a></li>
@@ -120,7 +121,25 @@
             </div>
         </div>
     </footer>
+    <script th:inline="javascript">
 
+        //선택된 메뉴를 고정시키려면
+        //li > a 태그에 클래스에 sub_menu_selected
+        //ul에는 display : block
+        //선택된 a 태그에는 on클래스를 넣어주면 됩니다.
+        $(function (){ //제이쿼리 즉시 실행 함수
+            var menu= JSON.parse('[[${menu}]]'); // 포스트 핸들러로 uri 값이 전달됩니다.
+            var target = ".sub_menu a[href='"+menu+"']";
+            $(target).addClass("on"); // on 추가
+            $(target).closest(".sub_menu").css("display","block"); //ul 태그에 display:block
+            $(target).closest(".sub_menu").prev().addClass("sub_menu_select");
+        })
+
+
+
+
+
+    </script>
 
 </body>
 </th:block>

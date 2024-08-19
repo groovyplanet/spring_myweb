@@ -23,31 +23,29 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductMapper productMapper;
 
-    @Value("${project.upload.path}") // application.properties에 있는 키값 받아옴
+    @Value("${project.upload.path}") //application.properties에 있는 키값 받아옴
     private String uploadPath; //업로드 경로
 
     //폴더 생성 함수
-    public String makeFolder(){
-        String filepath = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        File file = new File(uploadPath + "/" + filepath);
-        if (!file.exists()) {
-            file.mkdirs();
+    public String makeFolder() {
+        String filepath = LocalDate.now().format( DateTimeFormatter.ofPattern("yyyyMM") );
+        File file = new File( uploadPath + "/" + filepath);
+        if(file.exists() == false) {
+            file.mkdirs(); //폴더 생성
         }
         return filepath;
     }
 
+
     @Override
-    @Transactional(rollbackFor = Exception.class)// 이 메서드 안에서 예외가 나면 rollback 시킴
-    //단 try~catch 문장으로 예외 처리가 해결 되면, 트랜잭션 처리가 되지 않습니다.
+    @Transactional(rollbackFor = Exception.class) //이 메서드 안에서 예외가 나면 ROLLBACK시킴
+    //단 try ~ catch문장으로 예외처리가 해결 되면, 트랜잭션 처리가 되지 않습니다.
     public int productInsert(ProductVO vo, List<MultipartFile> files) {
-        //파일업로드 처리..
-        //파일 경로 insert
-        //상품데이터 insert
-        
-        //1st  - 상품 인서트
-        int result = productMapper.productInsert(vo); // 상품 insert
-        //2nd - 파일 업로드
-        for(MultipartFile file : files){
+
+        //1st - 상품 인서트
+        int result = productMapper.productInsert(vo); //상품 insert
+        //2nd - 파일업로드
+        for(MultipartFile file : files) {
             String originName = file.getOriginalFilename(); //파일명
             String filename = originName.substring(  originName.lastIndexOf("\\") + 1);
             String filepath = makeFolder(); //폴더명
@@ -63,22 +61,21 @@ public class ProductServiceImpl implements ProductService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             //3nd - 파일 인서트
             productMapper.uploadFile(
                     ProductUploadVO.builder()
                             .filename(filename)
                             .filepath(filepath)
                             .uuid(uuid)
-                            .prodWriter(vo.getProdWriter())
+                            .prodWriter( vo.getProdWriter() )
                             .build()
-                            );
+                    );
 
         }
-        
 
-        return productMapper.productInsert(vo);
+        return result;
     }
-
 
     @Override
     public ArrayList<ProductVO> getList(String userId, Criteria cri) {
@@ -115,4 +112,8 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.getCategoryChild(vo);
     }
 
+    @Override
+    public ArrayList<ProductUploadVO> getImgs(int prodId) {
+        return productMapper.getImgs(prodId);
+    }
 }
